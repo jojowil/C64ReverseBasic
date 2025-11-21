@@ -1,0 +1,347 @@
+ This code was pulled from an older draft of this solution. The goal
+ is to try and make the resultant code something that could be run
+ through a C64 BASIC assembler and still have the code run rather than
+ try to make the source look like the C64 screen listing.
+
+ So, sorry petscii and tokens, I'm going with the tables created for the
+ C64Basic assembler.
+
+    static Object[][] petscii = {
+        {0x00, " "}, // UNDEF
+        {0x01, "\uE3C1"}, // CTRL-A
+        {0x02, "\uE3C2"}, // CTRL-B
+        {0x03, "\uE3C3"}, // CTRL-C
+        {0x04, "\uE3C4"}, // CTRL-D
+        {0x05, "\uE3C5"}, // CTRL-E
+        {0x06, "\uE3C6"}, // CTRL-F
+        {0x07, "\uE3C7"}, // CTRL-G
+        {0x08, "\uE3C8"}, // CTRL-H
+        {0x09, "\uE3C9"}, // CTRL-I
+        {0x0A, "\uE3CA"}, // CTRL-J
+        {0x0B, "\uE3CB"}, // CTRL-K
+        {0x0C, "\uE3CC"}, // CTRL-L
+        {0x0D, "\uE3CD"}, // CTRL-M
+        {0x0E, "\uE3CE"}, // CTRL-N
+        {0x0F, "\uE3CF"}, // CTRL-O
+        {0x10, "\uE3D0"}, // CTRL-P
+        {0x11, "\uE3D1"}, // CTRL-Q
+        {0x12, "\uE3D2"}, // CTRL-R
+        {0x13, "\uE3D3"}, // CTRL-S
+        {0x14, "\uE3D4"}, // CTRL-T
+        {0x15, "\uE3D5"}, // CTRL-U
+        {0x16, "\uE3D6"}, // CTRL-V
+        {0x17, "\uE3D7"}, // CTRL-W
+        {0x18, "\uE3D8"}, // CTRL-X
+        {0x19, "\uE3D9"}, // CTRL-Y
+        {0x1A, "\uE3DA"}, // CTRL-Z
+        {0x1B, " "}, // UNDEF
+        {0x1C, "\uF101"}, // RED COLOR SWITCH (CUS)
+        {0x1D, "\uF11D"}, // CURSOR RIGHT (CUS)
+        {0x1E, "\uF102"}, // GREEN COLOR SWITCH (CUS)
+        {0x1F, "\uF103"}, // BLUE COLOR SWITCH (CUS)
+        {0x20, " "}, // SPACE
+        {0x21, "!"}, // EXCLAMATION MARK
+        {0x22, "\""}, // QUOTATION MARK
+        {0x23, "#"}, // NUMBER SIGN
+        {0x24, "$"}, // DOLLAR SIGN
+        {0x25, "%"}, // PERCENT SIGN
+        {0x26, "&"}, // AMPERSAND
+        {0x27, "'"}, // APOSTROPHE
+        {0x28, "("}, // LEFT PARENTHESIS
+        {0x29, ")"}, // RIGHT PARENTHESIS
+        {0x2A, "*"}, // ASTERISK
+        {0x2B, "+"}, // PLUS SIGN
+        {0x2C, ","}, // COMMA
+        {0x2D, "-"}, // HYPHEN-MINUS
+        {0x2E, "."}, // FULL STOP
+        {0x2F, "/"}, // SOLIDUS
+        {0x30, "0"}, // DIGIT ZERO
+        {0x31, "1"}, // DIGIT ONE
+        {0x32, "2"}, // DIGIT TWO
+        {0x33, "3"}, // DIGIT THREE
+        {0x34, "4"}, // DIGIT FOUR
+        {0x35, "5"}, // DIGIT FIVE
+        {0x36, "6"}, // DIGIT SIX
+        {0x37, "7"}, // DIGIT SEVEN
+        {0x38, "8"}, // DIGIT EIGHT
+        {0x39, "9"}, // DIGIT NINE
+        {0x3A, ":"}, // COLON
+        {0x3B, ";"}, // SEMICOLON
+        {0x3C, "<"}, // LESS-THAN SIGN
+        {0x3D, "="}, // EQUALS SIGN
+        {0x3E, ">"}, // GREATER-THAN SIGN
+        {0x3F, "?"}, // QUESTION MARK
+        {0x40, "@"}, // COMMERCIAL AT
+        {0x41, "A"}, // LATIN CAPITAL LETTER A
+        {0x42, "B"}, // LATIN CAPITAL LETTER B
+        {0x43, "C"}, // LATIN CAPITAL LETTER C
+        {0x44, "D"}, // LATIN CAPITAL LETTER D
+        {0x45, "E"}, // LATIN CAPITAL LETTER E
+        {0x46, "F"}, // LATIN CAPITAL LETTER F
+        {0x47, "G"}, // LATIN CAPITAL LETTER G
+        {0x48, "H"}, // LATIN CAPITAL LETTER H
+        {0x49, "I"}, // LATIN CAPITAL LETTER I
+        {0x4A, "J"}, // LATIN CAPITAL LETTER J
+        {0x4B, "K"}, // LATIN CAPITAL LETTER K
+        {0x4C, "L"}, // LATIN CAPITAL LETTER L
+        {0x4D, "M"}, // LATIN CAPITAL LETTER M
+        {0x4E, "N"}, // LATIN CAPITAL LETTER N
+        {0x4F, "O"}, // LATIN CAPITAL LETTER O
+        {0x50, "P"}, // LATIN CAPITAL LETTER P
+        {0x51, "Q"}, // LATIN CAPITAL LETTER Q
+        {0x52, "R"}, // LATIN CAPITAL LETTER R
+        {0x53, "S"}, // LATIN CAPITAL LETTER S
+        {0x54, "T"}, // LATIN CAPITAL LETTER T
+        {0x55, "U"}, // LATIN CAPITAL LETTER U
+        {0x56, "V"}, // LATIN CAPITAL LETTER V
+        {0x57, "W"}, // LATIN CAPITAL LETTER W
+        {0x58, "X"}, // LATIN CAPITAL LETTER X
+        {0x59, "Y"}, // LATIN CAPITAL LETTER Y
+        {0x5A, "Z"}, // LATIN CAPITAL LETTER Z
+        {0x5B, "["}, // LEFT SQUARE BRACKET
+        {0x5C, "£"}, // POUND SIGN
+        {0x5D, "]"}, // RIGHT SQUARE BRACKET
+        {0x5E, "↑"}, // UPWARDS ARROW
+        {0x5F, "←"}, // LEFTWARDS ARROW
+        {0x60, "━"}, // BOX DRAWINGS LIGHT HORIZONTAL
+        {0x61, "♠"}, // BLACK SPADE SUIT
+        {0x62, "\uD83E\uDF72"}, // BOX DRAWINGS LIGHT VERTICAL
+        {0x63, "\uD83E\uDF78"}, // BOX DRAWINGS LIGHT HORIZONTAL
+        {0x64, "\uD83E\uDF77"}, // BOX DRAWINGS LIGHT HORIZONTAL ONE QUARTER UP (CUS)
+        {0x65, "\uD83E\uDF76"}, // BOX DRAWINGS LIGHT HORIZONTAL TWO QUARTERS UP (CUS)
+        {0x66, "\uD83E\uDF7A"}, // BOX DRAWINGS LIGHT HORIZONTAL ONE QUARTER DOWN (CUS)
+        {0x67, "\uD83E\uDF71"}, // BOX DRAWINGS LIGHT VERTICAL ONE QUARTER LEFT (CUS)
+        {0x68, "\uD83E\uDF74"}, // BOX DRAWINGS LIGHT VERTICAL ONE QUARTER RIGHT (CUS)
+        {0x69, "╮"}, // BOX DRAWINGS LIGHT ARC DOWN AND LEFT
+        {0x6A, "╰"}, // BOX DRAWINGS LIGHT ARC UP AND RIGHT
+        {0x6B, "╯"}, // BOX DRAWINGS LIGHT ARC UP AND LEFT
+        {0x6C, "\uD83E\uDF7C"}, // ONE EIGHTH BLOCK UP AND RIGHT (CUS)
+        {0x6D, "╲"}, // BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT
+        {0x6E, "╱"}, // BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT
+        {0x6F, "\uD83E\uDF7D"}, // ONE EIGHTH BLOCK DOWN AND RIGHT (CUS)
+        {0x70, "\uD83E\uDF7E"}, // ONE EIGHTH BLOCK DOWN AND LEFT (CUS)
+        {0x71, "●"}, // BLACK CIRCLE
+        {0x72, "\uD83E\uDF7B"}, // BOX DRAWINGS LIGHT HORIZONTAL TWO QUARTERS DOWN (CUS)
+        {0x73, "♥"}, // BLACK HEART SUIT
+        {0x74, "\uD83E\uDF70"}, // BOX DRAWINGS LIGHT VERTICAL TWO QUARTERS LEFT (CUS)
+        {0x75, "╭"}, // BOX DRAWINGS LIGHT ARC DOWN AND RIGHT
+        {0x76, "╳"}, // BOX DRAWINGS LIGHT DIAGONAL CROSS
+        {0x77, "○"}, // WHITE CIRCLE
+        {0x78, "♣"}, // BLACK CLUB SUIT
+        {0x79, "\uD83E\uDF75"}, // BOX DRAWINGS LIGHT VERTICAL TWO QUARTERS RIGHT (CUS)
+        {0x7A, "♦"}, // BLACK DIAMOND SUIT
+        {0x7B, "┼"}, // BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL
+        {0x7C, "\uD83E\uDF8C"}, // LEFT HALF BLOCK MEDIUM SHADE (CUS)
+        {0x7D, "│"}, // BOX DRAWINGS LIGHT VERTICAL
+        {0x7E, "π"}, // GREEK SMALL LETTER PI
+        {0x7F, "◥"}, // BLACK UPPER RIGHT TRIANGLE
+        {0x80, " "}, // UNDEF
+        {0x81, " "}, // ORANGE COLOR SWITCH (CUS)
+        {0x82, " "}, // UNDEF
+        {0x83, " "}, // UNDEF
+        {0x84, " "}, // UNDEF
+        {0x85, " "}, // FUNCTION KEY 1 (CUS)
+        {0x86, " "}, // FUNCTION KEY 3 (CUS)
+        {0x87, " "}, // FUNCTION KEY 5 (CUS)
+        {0x88, " "}, // FUNCTION KEY 7 (CUS)
+        {0x89, " "}, // FUNCTION KEY 2 (CUS)
+        {0x8A, " "}, // FUNCTION KEY 4 (CUS)
+        {0x8B, " "}, // FUNCTION KEY 6 (CUS)
+        {0x8C, " "}, // FUNCTION KEY 8 (CUS)
+        {0x8D, "\u000b"}, // LINE FEED
+        {0x8E, " "}, // SHIFT IN
+        {0x8F, " "}, // BLINK OFF
+        {0x90, " "}, // BLACK COLOR SWITCH (CUS)
+        {0x91, " "}, // CURSOR UP (CUS)
+        {0x92, " "}, // REVERSE VIDEO OFF (CUS)
+        {0x93, "\u000C"}, // FORM FEED
+        {0x94, " "}, // INSERT (CUS)
+        {0x95, " "}, // BROWN COLOR SWITCH (CUS)
+        {0x96, " "}, // LIGHT RED COLOR SWITCH (CUS)
+        {0x97, " "}, // GRAY 1 COLOR SWITCH (CUS)
+        {0x98, " "}, // GRAY 2 COLOR SWITCH (CUS)
+        {0x99, " "}, // LIGHT GREEN COLOR SWITCH (CUS)
+        {0x9A, " "}, // LIGHT BLUE COLOR SWITCH (CUS)
+        {0x9B, " "}, // GRAY 3 COLOR SWITCH (CUS)
+        {0x9C, " "}, // PURPLE COLOR SWITCH (CUS)
+        {0x9D, " "}, // CURSOR LEFT (CUS)
+        {0x9E, " "}, // YELLOW COLOR SWITCH (CUS)
+        {0x9F, " "}, // CYAN COLOR SWITCH (CUS)
+        {0xA0, "\u00A0"}, // NO-BREAK SPACE
+        {0xA1, "▌"}, // LEFT HALF BLOCK
+        {0xA2, "▄"}, // LOWER HALF BLOCK
+        {0xA3, "▔"}, // UPPER ONE EIGHTH BLOCK
+        {0xA4, "▁"}, // LOWER ONE EIGHTH BLOCK
+        {0xA5, "▏"}, // LEFT ONE EIGHTH BLOCK
+        {0xA6, "▒"}, // MEDIUM SHADE
+        {0xA7, "▕"}, // RIGHT ONE EIGHTH BLOCK
+        {0xA8, "\uD83E\uDF8F"}, // LOWER HALF BLOCK MEDIUM SHADE (CUS)
+        {0xA9, "◤"}, // BLACK UPPER LEFT TRIANGLE
+        {0xAA, "\uD83E\uDF87"}, // RIGHT ONE QUARTER BLOCK (CUS)
+        {0xAB, "├"}, // BOX DRAWINGS LIGHT VERTICAL AND RIGHT
+        {0xAC, "▗"}, // BLACK SMALL SQUARE LOWER RIGHT (CUS)
+        {0xAD, "└"}, // BOX DRAWINGS LIGHT UP AND RIGHT
+        {0xAE, "┐"}, // BOX DRAWINGS LIGHT DOWN AND LEFT
+        {0xAF, "▂"}, // LOWER ONE QUARTER BLOCK
+        {0xB0, "┌"}, // BOX DRAWINGS LIGHT DOWN AND RIGHT
+        {0xB1, "┴"}, // BOX DRAWINGS LIGHT UP AND HORIZONTAL
+        {0xB2, "┬"}, // BOX DRAWINGS LIGHT DOWN AND HORIZONTAL
+        {0xB3, "┤"}, // BOX DRAWINGS LIGHT VERTICAL AND LEFT
+        {0xB4, "▎"}, // LEFT ONE QUARTER BLOCK
+        {0xB5, "▍"}, // LEFT THREE EIGTHS BLOCK
+        {0xB6, "\uD83E\uDF88"}, // RIGHT THREE EIGHTHS BLOCK (CUS)
+        {0xB7, "\uD83E\uDF82"}, // UPPER ONE QUARTER BLOCK (CUS)
+        {0xB8, "\uD83E\uDF83"}, // UPPER THREE EIGHTS BLOCK (CUS)
+        {0xB9, "▃"}, // LOWER THREE EIGHTHS BLOCK
+        {0xBA, "\uD83E\uDF7F"}, // ONE EIGHTH BLOCK UP AND LEFT (CUS)
+        {0xBB, "▖"}, // BLACK SMALL SQUARE LOWER LEFT (CUS)
+        {0xBC, "▝"}, // BLACK SMALL SQUARE UPPER RIGHT (CUS)
+        {0xBD, "┘"}, // BOX DRAWINGS LIGHT UP AND LEFT
+        {0xBE, "▘"}, // BLACK SMALL SQUARE UPPER LEFT (CUS)
+        {0xBF, "▚"}, // TWO SMALL BLACK SQUARES DIAGONAL LEFT TO RIGHT (CUS)
+        {0xC0, "━"}, // BOX DRAWINGS LIGHT HORIZONTAL
+        {0xC1, "♠"}, // BLACK SPADE SUIT
+        {0xC2, "\uD83E\uDF72"}, // BOX DRAWINGS LIGHT VERTICAL
+        {0xC3, "\uD83E\uDF78"}, // BOX DRAWINGS LIGHT HORIZONTAL
+        {0xC4, "\uD83E\uDF77"}, // BOX DRAWINGS LIGHT HORIZONTAL ONE QUARTER UP (CUS)
+        {0xC5, "\uD83E\uDF76"}, // BOX DRAWINGS LIGHT HORIZONTAL TWO QUARTERS UP (CUS)
+        {0xC6, "\uD83E\uDF7a"}, // BOX DRAWINGS LIGHT HORIZONTAL ONE QUARTER DOWN (CUS)
+        {0xC7, "\uD83E\uDF71"}, // BOX DRAWINGS LIGHT VERTICAL ONE QUARTER LEFT (CUS)
+        {0xC8, "\uD83E\uDF74"}, // BOX DRAWINGS LIGHT VERTICAL ONE QUARTER RIGHT (CUS)
+        {0xC9, "╮"}, // BOX DRAWINGS LIGHT ARC DOWN AND LEFT
+        {0xCA, "╰"}, // BOX DRAWINGS LIGHT ARC UP AND RIGHT
+        {0xCB, "╯"}, // BOX DRAWINGS LIGHT ARC UP AND LEFT
+        {0xCC, "\uD83E\uDF7c"}, // ONE EIGHTH BLOCK UP AND RIGHT (CUS)
+        {0xCD, "╲"}, // BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT
+        {0xCE, "╱"}, // BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT
+        {0xCF, "\uD83E\uDF7d"}, // ONE EIGHTH BLOCK DOWN AND RIGHT (CUS)
+        {0xD0, "\uD83E\uDF7e"}, // ONE EIGHTH BLOCK DOWN AND LEFT (CUS)
+        {0xD1, "●"}, // BLACK CIRCLE
+        {0xD2, "\uD83E\uDF7b"}, // BOX DRAWINGS LIGHT HORIZONTAL TWO QUARTERS DOWN (CUS)
+        {0xD3, "♥"}, // BLACK HEART SUIT
+        {0xD4, "\uD83E\uDF70"}, // BOX DRAWINGS LIGHT VERTICAL TWO QUARTERS LEFT (CUS)
+        {0xD5, "╭"}, // BOX DRAWINGS LIGHT ARC DOWN AND LEFT
+        {0xD6, "╳"}, // BOX DRAWINGS LIGHT DIAGONAL CROSS
+        {0xD7, "○"}, // WHITE CIRCLE
+        {0xD8, "♣"}, // BLACK CLUB SUIT
+        {0xD9, "\uD83E\uDF75"}, // BOX DRAWINGS LIGHT VERTICAL TWO QUARTERS RIGHT (CUS)
+        {0xDA, "♦"}, // BLACK DIAMOND SUIT
+        {0xDB, "┼"}, // BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL
+        {0xDC, "\uD83E\uDF8c"}, // LEFT HALF BLOCK MEDIUM SHADE (CUS)
+        {0xDD, "│"}, // BOX DRAWINGS LIGHT VERTICAL
+        {0xDE, "π"}, // GREEK SMALL LETTER PI
+        {0xDF, "◥"}, // BLACK UPPER RIGHT TRIANGLE
+        {0xE0, "\u00A0"}, // NO-BREAK SPACE
+        {0xE1, "▌"}, // LEFT HALF BLOCK
+        {0xE2, "▄"}, // LOWER HALF BLOCK
+        {0xE3, "▔"}, // UPPER ONE EIGHTH BLOCK
+        {0xE4, "▁"}, // LOWER ONE EIGHTH BLOCK
+        {0xE5, "▏"}, // LEFT ONE EIGHTH BLOCK
+        {0xE6, "▒"}, // MEDIUM SHADE
+        {0xE7, "▕"}, // RIGHT ONE EIGHTH BLOCK
+        {0xE8, "\uD83E\uDF8f"}, // LOWER HALF BLOCK MEDIUM SHADE (CUS)
+        {0xE9, "◤"}, // BLACK UPPER LEFT TRIANGLE
+        {0xEA, "\uD83E\uDF87"}, // RIGHT ONE QUARTER BLOCK (CUS)
+        {0xEB, "├"}, // BOX DRAWINGS LIGHT VERTICAL AND RIGHT
+        {0xEC, "▗"}, // BLACK SMALL SQUARE LOWER RIGHT (CUS)
+        {0xED, "└"}, // BOX DRAWINGS LIGHT UP AND RIGHT
+        {0xEE, "┐"}, // BOX DRAWINGS LIGHT DOWN AND LEFT
+        {0xEF, "▂"}, // LOWER ONE QUARTER BLOCK
+        {0xF0, "┌"}, // BOX DRAWINGS LIGHT DOWN AND RIGHT
+        {0xF1, "┴"}, // BOX DRAWINGS LIGHT UP AND HORIZONTAL
+        {0xF2, "┬"}, // BOX DRAWINGS LIGHT DOWN AND HORIZONTAL
+        {0xF3, "┤"}, // BOX DRAWINGS LIGHT VERTICAL AND LEFT
+        {0xF4, "▎"}, // LEFT ONE QUARTER BLOCK
+        {0xF5, "▍"}, // LEFT THREE EIGTHS BLOCK
+        {0xF6, "\uD83E\uDF88"}, // RIGHT THREE EIGHTHS BLOCK (CUS)
+        {0xF7, "\uD83E\uDF82"}, // UPPER ONE QUARTER BLOCK (CUS)
+        {0xF8, "\uD83E\uDF83"}, // UPPER THREE EIGHTS BLOCK (CUS)
+        {0xF9, "▃"}, // LOWER THREE EIGHTHS BLOCK
+        {0xFA, "\uD83E\uDF7F"}, // ONE EIGHTH BLOCK UP AND LEFT (CUS)
+        {0xFB, "▖"}, // BLACK SMALL SQUARE LOWER LEFT (CUS)
+        {0xFC, "▝"}, // BLACK SMALL SQUARE UPPER RIGHT (CUS)
+        {0xFD, "┘"}, // BOX DRAWINGS LIGHT UP AND LEFT
+        {0xFE, "▘"}, // BLACK SMALL SQUARE UPPER LEFT (CUS)
+        {0xFF, "π"}, // GREEK SMALL LETTER PI
+    };
+
+    static Object[][] Tokens = {
+        {0x80,"END"},
+        {0x81,"FOR"},
+        {0x82,"NEXT"},
+        {0x83,"DATA"},
+        {0x84,"INPUT#"},
+        {0x85,"INPUT"},
+        {0x86,"DIM"},
+        {0x87,"READ"},
+        {0x88,"LET"},
+        {0x89,"GOTO"},
+        {0x8a,"RUN"},
+        {0x8b,"IF"},
+        {0x8c,"RESTORE"},
+        {0x8d,"GOSUB"},
+        {0x8e,"RETURN"},
+        {0x8f,"REM"},
+        {0x90,"STOP"},
+        {0x91,"ON"},
+        {0x92,"WAIT"},
+        {0x93,"LOAD"},
+        {0x94,"SAVE"},
+        {0x95,"VERIFY"},
+        {0x96,"DEF"},
+        {0x97,"POKE"},
+        {0x98,"PRINT#"},
+        {0x99,"PRINT"},
+        {0x9a,"CONT"},
+        {0x9b,"LIST"},
+        {0x9c,"CLR"},
+        {0x9d,"CMD"},
+        {0x9e,"SYS"},
+        {0x9f,"OPEN"},
+        {0xa0,"CLOSE"},
+        {0xa1,"GET"},
+        {0xa2,"NEW"},
+        {0xa3,"TAB("},
+        {0xa4,"TO"},
+        {0xa5,"FN"},
+        {0xa6,"SPC("},
+        {0xa7,"THEN"},
+        {0xa8,"NOT"},
+        {0xa9,"STEP"},
+        {0xaa,"+"},
+        {0xab,"-"},
+        {0xac,"*"},
+        {0xad,"/"},
+        //{0xae,"↑"},
+        {0xae,"^"},
+        {0xaf,"AND"},
+        {0xb0,"OR"},
+        {0xb1,">"},
+        {0xb2,"="},
+        {0xb3,"<"},
+        {0xb4,"SGN"},
+        {0xb5,"INT"},
+        {0xb6,"ABS"},
+        {0xb7,"USR"},
+        {0xb7,"FRE"},
+        {0xb9,"POS"},
+        {0xba,"SQR"},
+        {0xbb,"RND"},
+        {0xbc,"LOG"},
+        {0xbd,"EXP"},
+        {0xbe,"COS"},
+        {0xbf,"SIN"},
+        {0xc0,"TAN"},
+        {0xc1,"ATN"},
+        {0xc2,"PEEK"},
+        {0xc3,"LEN"},
+        {0xc4,"STR$"},
+        {0xc5,"VAL"},
+        {0xc6,"ASC"},
+        {0xc7,"CHR$"},
+        {0xc8,"LEFT$"},
+        {0xc9,"RIGHT$"},
+        {0xca,"MID$"},
+        {0xcb,"GO"},
+        {0xff,"π"},
+    };
