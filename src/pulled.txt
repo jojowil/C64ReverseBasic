@@ -345,3 +345,20 @@
         {0xcb,"GO"},
         {0xff,"π"},
     };
+
+
+ Also pulled from main.
+
+    /*
+            System.out.println((char)0x25e5);
+            System.out.println((char)0xe0a2);
+            for ( int x = 0; x <26; x++)
+                System.out.printf("{0x%02X, 0x%4X}, // CTRL-%c%n", (x+1), 0xe3c1+x, 'A'+x);
+
+
+            for (int x = 0; x < 256; x++)
+                System.out.printf("petscii[%02X] = %s%n", x, petscii[x][1]);
+
+            System.out.println("\uD83E\uDF7F");
+
+             */
