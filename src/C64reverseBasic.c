@@ -273,6 +273,7 @@ static unsigned char *readAllBytes(const char *fname, long *len) {
     // add the terminator
     buffer[fileSize] = '\0';
     *len = fileSize; // be sure to note the size!
+    fclose(file);
     return buffer;
 }
 
